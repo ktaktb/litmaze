@@ -23,11 +23,18 @@ function inline(value: string): string {
     .join("");
 }
 
+function withBreaks(value: string): string {
+  return value
+    .split("\n")
+    .map((line) => inline(line.trim()))
+    .join("<br>");
+}
+
 function paragraphHtml(paragraph: string, drop: boolean): string {
-  const text = paragraph.replaceAll("\n", " ").trim();
+  const text = paragraph.trim();
   const lead = drop ? text.match(/^([A-Za-z])([\s\S]*)$/) : null;
-  if (!lead) return `<p>${inline(text)}</p>`;
-  return `<p><span class="drop">${esc(lead[1] ?? "")}</span>${inline(lead[2] ?? "")}</p>`;
+  if (!lead) return `<p>${withBreaks(text)}</p>`;
+  return `<p><span class="drop">${esc(lead[1] ?? "")}</span>${withBreaks(lead[2] ?? "")}</p>`;
 }
 
 function excerptHtml(excerpt: string): string {
@@ -45,7 +52,7 @@ export function renderApp(root: HTMLElement, maze: MazeDef, state: GameState): v
   const pockets = inventoryItems(maze, state);
 
   const ground = item
-    ? `<p class="ground"><span>${esc(room.itemPlace ?? "")}</span><button type="button" class="take-btn" data-take>Take</button><kbd>T</kbd></p>`
+    ? `<p class="ground"><span>${esc(room.itemPlace ?? "")}</span><button type="button" class="take-btn" data-take>${esc(maze.copy.take)}</button><kbd>T</kbd></p>`
     : "";
 
   const exitList = exits
@@ -60,7 +67,7 @@ export function renderApp(root: HTMLElement, maze: MazeDef, state: GameState): v
 
   const pocketList =
     pockets.length === 0
-      ? `<p class="empty">Nothing in your pockets.</p>`
+      ? `<p class="empty">${esc(maze.copy.empty)}</p>`
       : `<ul class="pockets">${pockets
           .map(
             (pocket) =>
@@ -68,13 +75,13 @@ export function renderApp(root: HTMLElement, maze: MazeDef, state: GameState): v
           )
           .join("")}</ul>`;
 
-  const ending = room.ending ? `<p class="end-mark">Last scene of the sample</p>` : "";
+  const ending = room.ending ? `<p class="end-mark">${esc(maze.copy.ending)}</p>` : "";
 
   root.innerHTML = `<div class="book">
     <header>
       <p class="brand">litmaze</p>
       <h1>${esc(maze.title)}</h1>
-      <p class="by">${esc(maze.author)} · public domain</p>
+      <p class="by">${esc(maze.author)} · ${esc(maze.copy.domain)}</p>
     </header>
     <main>
       ${ending}
@@ -87,14 +94,14 @@ export function renderApp(root: HTMLElement, maze: MazeDef, state: GameState): v
     <aside>
       <div class="rail">
         <section>
-          <h3>Exits</h3>
+          <h3>${esc(maze.copy.exits)}</h3>
           <ol class="exits">${exitList}</ol>
         </section>
         <section>
-          <h3>Inventory</h3>
+          <h3>${esc(maze.copy.inventory)}</h3>
           ${pocketList}
         </section>
-        <p class="help"><kbd>1</kbd>–<kbd>9</kbd> move · <kbd>T</kbd> take</p>
+        <p class="help"><kbd>1</kbd>–<kbd>9</kbd> ${esc(maze.copy.moveHint)} · <kbd>T</kbd> ${esc(maze.copy.takeHint)}</p>
       </div>
     </aside>
     <footer><p>${esc(maze.source)}</p></footer>

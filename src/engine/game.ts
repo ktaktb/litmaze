@@ -1,4 +1,8 @@
-import type { ExitView, GameState, ItemDef, MazeDef, RoomDef } from "./types.ts";
+import type { ExitView, GameState, ItemDef, MazeCopy, MazeDef, RoomDef } from "./types.ts";
+
+function fill(template: string, name: string): string {
+  return template.replaceAll("{name}", name);
+}
 
 function roomById(maze: MazeDef, id: string): RoomDef {
   const room = maze.rooms.find((candidate) => candidate.id === id);
@@ -63,6 +67,31 @@ export function validateMaze(maze: MazeDef): MazeDef {
 
   if (!roomIds.has(maze.startRoomId)) {
     throw new Error(`Start room "${maze.startRoomId}" does not exist.`);
+  }
+
+  const copyKeys: (keyof MazeCopy)[] = [
+    "domain",
+    "exits",
+    "inventory",
+    "empty",
+    "take",
+    "ending",
+    "moveHint",
+    "takeHint",
+    "cantGo",
+    "nothing",
+    "took",
+    "unlocked",
+    "needs",
+    "fits",
+  ];
+  for (const key of copyKeys) {
+    if (!maze.copy[key].trim()) throw new Error(`Maze copy "${key}" is empty.`);
+  }
+  for (const key of ["took", "unlocked", "needs"] as const) {
+    if (!maze.copy[key].includes("{name}")) {
+      throw new Error(`Maze copy "${key}" must include {name}.`);
+    }
   }
 
   const itemIds = new Set<string>();
@@ -160,7 +189,7 @@ export function listExits(maze: MazeDef, state: GameState): ExitView[] {
       id: exit.id,
       label: exit.label,
       open,
-      tag: open ? "key fits" : `needs the ${item.name}`,
+      tag: open ? maze.copy.fits : fill(maze.copy.needs, item.name),
     };
   });
 }
@@ -168,7 +197,7 @@ export function listExits(maze: MazeDef, state: GameState): ExitView[] {
 export function tryMove(maze: MazeDef, state: GameState, exitId: string): GameState {
   const room = roomById(maze, state.roomId);
   const exit = room.exits.find((candidate) => candidate.id === exitId);
-  if (!exit) return { ...state, note: "You can't go that way.", tone: "block" };
+  if (!exit) return { ...state, note: maze.copy.cantGo, tone: "block" };
 
   if (exit.requires && !state.inventory.includes(exit.requires)) {
     return { ...state, note: exit.lockedText, tone: "block" };
@@ -185,7 +214,7 @@ export function tryMove(maze: MazeDef, state: GameState, exitId: string): GameSt
   return {
     ...state,
     roomId: exit.to,
-    note: `The ${item.name} turns in the lock.`,
+    note: fill(maze.copy.unlocked, item.name),
     tone: "open",
   };
 }
@@ -193,13 +222,13 @@ export function tryMove(maze: MazeDef, state: GameState, exitId: string): GameSt
 export function tryTake(maze: MazeDef, state: GameState): GameState {
   const item = groundItem(maze, state);
   if (!item) {
-    return { ...state, note: "There is nothing here to take.", tone: "block" };
+    return { ...state, note: maze.copy.nothing, tone: "block" };
   }
   return {
     ...state,
     inventory: [...state.inventory, item.id],
     taken: [...state.taken, item.id],
-    note: `You take the ${item.name}.`,
+    note: fill(maze.copy.took, item.name),
     tone: "take",
   };
 }

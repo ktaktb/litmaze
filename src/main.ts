@@ -1,4 +1,4 @@
-import { alice } from "./content/alice.ts";
+import { xiyou } from "./content/xiyou.ts";
 import {
   listExits,
   startGame,
@@ -14,7 +14,7 @@ const root = document.querySelector("#app");
 if (!(root instanceof HTMLElement)) throw new Error("Missing #app");
 const app: HTMLElement = root;
 
-const maze = validateMaze(alice);
+const maze = validateMaze(xiyou);
 let state: GameState = startGame(maze);
 
 function draw(): void {

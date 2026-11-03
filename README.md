@@ -1,35 +1,43 @@
 # litmaze
 
-Public-domain novels as playable text mazes. A room is a scene, and its page is an excerpt of the original book. An exit is a move. A key in your inventory opens a door that was shut.
+公有領域的小說，做成能走、能讀的文字迷宮。一間是一景，頁上是原書引文。一條去路是一步。身上帶著該帶的東西，關上的路才開。
 
-You walk and read. Nothing in this app writes story text. There is no language model.
+只走路、讀原文。這個程式不寫故事，也沒有語言模型。
 
-The sample is a short maze through Lewis Carroll’s *Alice’s Adventures in Wonderland* (1865), which is in the public domain. The excerpts are Carroll’s words. The exits, the key, and the locked door are the game.
+眼下的樣例是吳承恩《西遊記》裡的一小段路。引文是小說原文，去路、金箍棒和那道關是遊戲。
 
-## Run
+The sample is a short maze through Wu Cheng'en's public-domain novel *Journey to the West* (《西遊記》).
+
+## 執行
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open the URL Vite prints (usually http://localhost:5173).
+打開 Vite 印出的網址（通常是 http://localhost:5173）。
 
-## Play
+## 怎麼玩
 
-You start on the riverbank.
+從花果山出發。
 
-- Read the excerpt.
-- Leave by an exit: click it, or press `1`–`9`.
-- Press `T`, or click **Take**, to pick something up. Inventory is the margin on the right (below the page on a narrow screen).
-- The little door in the hall stays locked until you hold the tiny golden key. The key is on the glass table.
-- The sample’s last scene is the Queen’s croquet-ground. You can walk back out.
+- 讀這一景的原文。
+- 選一條去路：點它，或按 `1`–`9`。
+- 按 `T`，或點 **拾取**，把地上的東西拿起來。隨身的東西列在右邊（窄螢幕上則在正文下面）。
+- 水簾洞外有天兵。手裡沒有如意金箍棒，就出不得鐵板橋。棒在東海龍宮的海藏裡。
+- 樣例的最後一景是洞外大戰。還可以走回去。
 
-Refresh the page to start over.
+重新整理頁面就從頭再走。
 
-`npm run check` walks the maze in Node (the side path, the locked door, the key, and the ending) without a browser.
+`npm run check` 在 Node 裡走一遍（訪仙的岔路、關著的洞口、拾棒、末景），不必開瀏覽器。
 
-## Build
+## 原文
+
+引文依[維基文庫《西遊記》](https://zh.wikisource.org/wiki/西遊記)第一回、第三回、第五回，繁體，未改寫。水簾洞兩段散文之間略去一則韻文。
+
+《西遊記》是明代小說，作者吳承恩，作品本身屬公有領域。介面用字與引文同為繁體。
+
+## 建置
 
 ```bash
 npm install
@@ -37,10 +45,10 @@ npm run build
 npm run preview
 ```
 
-## Layout
+## 目錄
 
-- `src/engine` — move, take, and gates
-- `src/content/alice.ts` — rooms, exits, and the key
-- `src/ui` — the page
+- `src/engine` — 移動、拾取、開門
+- `src/content/xiyou.ts` — 房間、去路、金箍棒，以及畫面上的中文
+- `src/ui` — 頁面
 
-Another book would be another module shaped like `alice.ts`. The engine does not know about Alice.
+換一本書，就再寫一個跟 `xiyou.ts` 同樣形狀的模組。引擎裡沒有寫死《西遊記》。

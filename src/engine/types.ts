@@ -46,12 +46,32 @@ export interface RoomDef {
   ending?: boolean;
 }
 
+/** Player-facing strings. `{name}` is replaced with the item name. */
+export interface MazeCopy {
+  domain: string;
+  exits: string;
+  inventory: string;
+  empty: string;
+  take: string;
+  ending: string;
+  moveHint: string;
+  takeHint: string;
+  cantGo: string;
+  nothing: string;
+  took: string;
+  unlocked: string;
+  needs: string;
+  fits: string;
+}
+
 export interface MazeDef {
   id: string;
   title: string;
   author: string;
   /** Citation shown in the page footer. */
   source: string;
+  /** Labels and sentences. The engine does not pick a language. */
+  copy: MazeCopy;
   startRoomId: string;
   items: ItemDef[];
   rooms: RoomDef[];
